@@ -9,12 +9,15 @@ class Category(models.Model):
     avatar = models.ImageField(_('avatar'), blank=True, upload_to='categories/')
     is_enable = models.BooleanField(_('is enable'),default=True)
     created_time = models.DateTimeField(_('created time'), auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
+    updated_time = models.DateTimeField(_('updated time'),auto_now=True)
 
     class Meta:
         db_table = 'categories'
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')
+
+    def __str__(self):
+        return self.title
 
 class Product(models.Model):
     title = models.CharField(_('title'),max_length=50)
@@ -23,7 +26,7 @@ class Product(models.Model):
     is_enable = models.BooleanField(_('is enable'),default=True)
     categories = models.ManyToManyField('Category', verbose_name=_('categories'), blank=True)
     created_time = models.DateTimeField(_('created time'), auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
+    updated_time = models.DateTimeField(_('update time time'),auto_now=True)
 
     class Meta:
         db_table = 'products'
@@ -31,7 +34,17 @@ class Product(models.Model):
         verbose_name_plural = _('Products')
 
 class File(models.Model):
+    FILE_AUDIO = 1
+    FILE_VIDEO = 2
+    FILE_PDF = 3
+    FILE_TYPES=(
+        (FILE_AUDIO,_('audio')),
+        (FILE_VIDEO,_('video')),
+        (FILE_PDF,_('pdf'))
+    )
+    product = models.ForeignKey('Product',verbose_name=_('product'),null=True,related_name='files',on_delete=models.CASCADE)
     title = models.CharField(_('title'), max_length=50)
+    file_type = models.PositiveSmallIntegerField(_('file type'),choices=FILE_TYPES, default=FILE_VIDEO)
     file = models.FileField(_('file'),upload_to='files/%Y/%w/%d/')
     is_enable = models.BooleanField(_('is enable'), default=True)
     created_time = models.DateTimeField(_('created time'), auto_now_add=True)
