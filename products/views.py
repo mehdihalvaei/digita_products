@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
 
 from .models import Category,Product,File
-
+from subscriptions.models import Subscription
 from .serializers import CategorySerializer,ProductSerializer,FileSerializer
 
 # Create your views here.
@@ -33,6 +34,7 @@ class ProductListView(APIView):
         return Response(serializer.data)
 
 class ProductDetailView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self,request,pk):
         try:
             product = Product.objects.get(pk=pk)
